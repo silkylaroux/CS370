@@ -1,5 +1,73 @@
 // Include the necessary header file.
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h> 
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(int argc, char **argv) {
+  char *filename = "textfile.txt";
+  if (argc > 1) {
+    filename = argv[1];
+  }
+
+  char *sentence;
+  char **commands;
+
+  FILE *given_file;
+  given_file = fopen(filename, "r");
+
+  if (given_file == NULL) {
+    printf("%s\n", "File opening has failed. Ending program.");
+    exit(0);
+
+  } else {
+    sentence = fgets(sentence, 100, given_file);
+    fclose(given_file);
+
+    int x = 0;
+    int y = 0;
+
+    for (int i = 0; i < sizeof(sentence); i++) {
+      if (sentence[i] == ',' || sentence[i] == '\0') {
+        commands[x][y] = '\0';
+        x++;
+        y = 0;
+      } else {
+        commands[x][y] = sentence[i];
+        y++;
+      }
+    }
+
+    for (int i = 0; i < x + 1; i++) {
+      pid_t id_check = fork();
+
+      if (id_check == 0) {
+        execlp("./Executor","Executor",commands[i],NULL);
+
+      } else if(id_check > 0) {
+        printf("%s %d.\n", "ParentProgram: forked process with ID", id_check);
+        printf("%s %d]\n", "ParentProgram: waiting for process [", id_check);
+        int waitstatus_v;
+        wait(&waitstatus_v);
+
+          if (WIFEXITED(waitstatus_v == 1))  {
+            printf("ParentProgram: Child process %d returned %d\n", id_check, WEXITSTATUS(waitstatus_v));
+          }
+
+      } else {
+        printf("%s\n", "ParentProgram: Child Process Creation failed. Exiting.");
+
+      }
+    }
+    printf("%s\n", "ParentProgram: Process Complete.");
+  }
+  
+  
+  // Write your code here
+}
+
+
 /* Skeleton Code
      * Define a char pointer, filename, that holds a file name. Initialize
  * filename as "textfile.txt"
@@ -19,16 +87,21 @@
  * then exit the program.
      * Get the line present in the file using the fgets function.
      * Close the file using the fclose function.
-     */
 
-/* Keep a variable x and y, both initialized to 0, where y points to the position in 'commands' 2-D array in the xth row.
+
+ Keep a variable x and y, both initialized to 0, where y points to the position
+ in 'commands' 2-D array in the xth row.
      * Remember, every row in the 'commands' array holds a different command.
-     * In a for loop, use an iterating variable, and go to every character in the 'sentence' array, and check if it is a comma.
-     * If it is not a comma, set the yth position in the xth row of commands array with the sentence[i] value, and increment the value of y.
-     * Else if it is comma, or it is the EOF character (\0), set the yth position in the xth row of commands array to '\0', 
-     * increment the x value to point the next row, as the command in the present row is now complete. Set y to 0.
+     * In a for loop, use an iterating variable, and go to every character in
+ the 'sentence' array, and check if it is a comma.
+     * If it is not a comma, set the yth position in the xth row of commands
+ array with the sentence[i] value, and increment the value of y.
+     * Else if it is comma, or it is the EOF character (\0), set the yth
+ position in the xth row of commands array to '\0',
+     * increment the x value to point the next row, as the command in the
+ present row is now complete. Set y to 0.
      * End of for loop.
-     */ /* Keep a variable x and y, both initialized to 0, where y points to the
+     * Keep a variable x and y, both initialized to 0, where y points to the
       * position in 'commands' 2-D array in the xth row.
       * Remember, every row in the 'commands' array holds a different command.
       * In a for loop, use an iterating variable, and go to every character in
@@ -41,52 +114,7 @@
       * present row is now complete. Set y to 0.
       * End of for loop.
       */
-int main(int argc, char **argv) {
-  char *filename = "textfile.txt";
-  if (argc > 1) {
-    filename = argv[1];
-  }
-
-  char *sentence;
-  char **commands;
-
-  FILE *given_file;
-  given_file = fopen(filename, "r");
-
-  if (given_file == NULL) {
-    printf("%s\n", "File opening has failed. Ending program.");
-    return 1;
-  } else {
-    sentence = fgets(given_file);
-    fclose(given_file);
-
-    int x = 0;
-    int y = 0;
-
-    for (int i = 0; i < sizeof(sentence); i++) {
-      if (sentence[i] == ',' || sentence[i] == '\0') {
-        commands[x][y] = '\0';
-        x++;
-        y = 0;
-      } else {
-        commands[x][y] = sentence[i];
-        y++;
-      }
-    }
-    for (int i = 0; i < x + 1; i++) {
-      int fam_check = fork();
-      if (fam_check == 0) {
-        execlp("./Executor","Executor",commands[i],NULL);
-      } else {
-        printf("%s %d.\n", "ParentProgram: forked process with ID", fam_check);
-        printf("%s %d]\n", "ParentProgram: waiting for process [", fam_check);
-        int waitstatus_v;
-        waitstatus_v = wait();
-      }
-    }
-  }
-
-  /* Create a for loop that iterates through the commands array. 0 to x+1 should
+/* Create a for loop that iterates through the commands array. 0 to x+1 should
   * be the range
   * of the for loop as x has the count of commands except the last command.
   * Inside the for loop, fork a child process.
@@ -110,6 +138,3 @@ int main(int argc, char **argv) {
   * End for loop.
   * Print the statement "ParentProgram: Process Complete."
   */
-
-  // Write your code here
-}
