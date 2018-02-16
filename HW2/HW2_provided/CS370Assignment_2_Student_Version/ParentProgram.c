@@ -45,14 +45,14 @@ int main(int argc, char **argv) {
     }
     
     for (int i = 0; i < x + 1; i++) {
-      pid_t id_check = fork();
+      pid_t id_check = fork();                            // Forking process, and getting the id
 
-      if (id_check == 0) {
+      if (id_check == 0) {                                // Child process
         execlp("./Executor","Executor",commands[i],NULL);
 
-      } else if(id_check > 0) {
-        printf("%s %d.\n", "ParentProgram: forked process with ID", id_check);
-        printf("%s %d]\n", "ParentProgram: waiting for process [", id_check);
+      } else if(id_check > 0) {                           // Parent process
+        printf("%s%d.\n", "ParentProgram: Forked process with ID ", id_check);
+        printf("%s%d].\n", "ParentProgram: Waiting for process [", id_check);
         int waitstatus_v;
         wait(&waitstatus_v);
 
@@ -62,13 +62,12 @@ int main(int argc, char **argv) {
 
       } else {
         printf("%s\n", "ParentProgram: Child Process Creation failed. Exiting.");
-
       }
     }
 
-    free(sentence);                               // FREEING semtence
-    for ( int i = 0; i < 5; i++ ){                // FREEING commands
-      free(commands[i]);
+    free(sentence);                                       // FREEING semtence
+    for ( int i = 0; i < 5; i++ ){
+      free(commands[i]);                                  // FREEING commands
     }
     free(commands);
 

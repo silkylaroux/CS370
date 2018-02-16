@@ -1,4 +1,4 @@
-// Include the necessary header files here.
+// Damian Armijo
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> 
@@ -7,13 +7,9 @@
 
 int main(int argc, char **argv)
 {
-    //printf(argv[1]);
-    return(system(argv[1]));
-    /*In this program you have to print the name of the program, 
-     *along with the given command and the process Id
-     *Execute the command using system() function
-     *Return the status of execution of the system() to the parent program
-     */
-    
-    // Type your code here
+    printf("%s: Command: %s\n",argv[0],argv[1]);        // Prints out the file, and it's command
+    int checker = system(argv[1]);                      // Gets command return status
+    printf("Executor Process ID: %d\n",getpid());
+    return(checker);                                    // Returns the value returned by the system()
+                                                        // Call
 }

@@ -24,4 +24,4 @@ $(C_OBJS): ${C_HEADERS}
 clean:
 	rm -f *.o *~ $(EXE1) $(EXE2)
 package:
-	tar -cvf Lastname-Firstname-HW2.tar ParentProgram.c Executor.c Makefile README.txt
+	tar -cvf Armijo-Damian-HW2.tar ParentProgram.c Executor.c Makefile README.txt
