@@ -8,8 +8,8 @@ EXE2 = ParentProgram
 EXE3 = FileOpener
 #Compiler and loader commands and flags
 GCC = gcc
-GCC_FLAGS = -std=c11 -g  -Wall -c -I.
-LD_FLAGS = -std=c11 -g  -Wall -I.
+GCC_FLAGS = -std=gnu99 -g  -Wall -c -I.
+LD_FLAGS = -std=gnu99 -g  -Wall -I.
 #Compile .c files to .o files
 .c.o:
 	$(GCC) $(GCC_FLAGS) $<

@@ -3,24 +3,26 @@ README
 
 This package includes the following files.
 
-|-- ParentProgram.c [This is the driver program which will be used to open and read the file and also to invoke the child processes]
+|-- ParentProgram.c [This is the driver program which will create a pipe and also to invoke the child processes]
 |-- Executor.c [Executes a UNIX command passed as an argument to it. Should be invoked by the child processes only.]
 |-- Makefile [For compiling, cleaning and taring]. This file has been provided
+|-- FileOpener.c [This is the program that will be used to open and read the file into the pipe.]
 |-- README.txt [This file]
 
 ====================================================================================================================================
                                 QUESTIONS:
-1. What are the possible values/ range of values returned by the fork() and
-what do they mean?
-    
-    If fork returns 0 then the process was correctly forked and is a child process. If the fork
-returns a value greater than 0 it was correctly forked, and is a parent process. If the value is less
-than 0 the fork was not done successfully. 
+1.) What does pipe( ) do and what does it return? 
 
-2. What does the system( ) function do, and what are the possible return
-values?
+    It creates a pipe, which is an a channel of communication between processes. The [0] of the
+    pipe is to the read, and the [1] is the writing to the pipe. It returns 0 if successful, -1
+    if unsuccessful.
 
-    The system() is a c library function that returns information about the system.
-It returns what is returned in the terminal if the same commands are run in the terminal. In other
-words it returns information such as date, calender, folder info...etc. The return values are -1 if 
-the system() call failed, otherwise it returns exit code of the command.
+2.) What function is used for opening a shared memory object? What are the possible oflag
+values. Give just one line description each oflags value.
+
+    shm_open() is used to open a shared memory object. The possible oflags are:
+    O_RDWR - Open with read-wrtie access.
+    O_CREAT - Create the shared memory object if it does not exist.
+    O_EXCL - Return error if a shared memory object with the given name already exists.
+    O_TRUNC - If a shared memory object with the given name already exists truncate it to zero bytes.
+    O_RDONLY - Open with read only access.
