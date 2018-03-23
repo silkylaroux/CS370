@@ -16,9 +16,10 @@
 
 int main(int argc, char **argv)
 {
+   // printf("%s: Command: %s\n",argv[0],argv[1]);        // Prints out the file, and it's command
+    int checker = system(argv[1]);                      // Gets command return status
+    //printf("Executor Process ID: %d\n",getpid());
     printf("%s: Command: %s\n",argv[0],argv[1]);        // Prints out the file, and it's command
-    //int checker = system(argv[1]);                      // Gets command return status
-    printf("Executor Process ID: %d\n",getpid());
 
     int size = 256;
     int shm_fd;
@@ -26,8 +27,8 @@ int main(int argc, char **argv)
     
     shm_fd = shm_open(argv[1],O_CREAT | O_RDWR,0666);
     ptr = mmap(0,size,PROT_READ, MAP_SHARED, shm_fd,0);
-    sprintf(ptr,"%d",getpid());
-    printf("here\n");
+    sprintf(ptr,"%d",checker);
+    //printf("here\n");
 
     ptr++;
     shm_unlink(argv[1]);

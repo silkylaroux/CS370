@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   char txt[100] = "";
-  printf("ParentProgram: Text is \'%s\'\n",txt);
+  //printf("ParentProgram: Text is \'%s\'\n",txt);
   int pid = fork();
 
   if(pid >0){
@@ -34,8 +34,8 @@ int main(int argc, char **argv) {
       close(pip[1]);
       read(pip[0],txt,sizeof(txt));
       close(pip[0]);
-      printf(" Text is \'%s\'\n",txt);
-      printf(" Child process %d returned: %d\n",pid,getpid());
+      printf("Sentence is %s\n",txt);
+      printf("ParentProgram: Child process %d returned: %d\n",pid,waitstatus_v);
 
   }
   else if(pid ==0){
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 
     
 
-  pid_t id_check = fork();                            // Forking process, and getting the id
+                             // Forking process, and getting the id
   
   // char *filename = "textfile.txt";
   // if (argc > 1) {
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     //int z = strlen(txt);
     //printf("%d:%c\n",z,'c');
     for (int i = 0; i < strlen(txt); i++) {          // Processes contents of sentence and
-      if (txt[i] == ',') {    // Puts it into commands array.
+      if (txt[i] == ','||'\0') {    // Puts it into commands array.
         commands[x][y] = '\0';
         x++;
         y = 0;
@@ -91,14 +91,15 @@ int main(int argc, char **argv) {
         y++;
       }
     }
-      //printf("%c\n",commands[1][0]);
-    int returnID;
+//printf("%s\n",commands[1]);
+    //int returnID;
     for (int i = 0; i < x + 1; i++) {
+      pid_t id_check = fork(); 
+      int returnID;
       const char *v_write_mem = "Shared_mem";
 //printf("%s\n",commands[i]);
       if (id_check == 0) {                                // Child process
         execlp("./Executor","Executor",commands[i],v_write_mem,NULL);
-        exit(0);
 
       } else if(id_check > 0) {                           // Parent process
         printf("%s%d.\n", "ParentProgram: Forked process with ID ", id_check);
@@ -109,14 +110,14 @@ int main(int argc, char **argv) {
         shm_fd = shm_open(v_write_mem,O_CREAT | O_RDWR,0666);
         ftruncate(shm_fd,size);
         ptr = mmap(0,size,PROT_READ, MAP_SHARED, shm_fd,0);
-        printf("Program3: FD for shared memory for Executor is %d\n\n", shm_fd);
+        printf("ParentProgram: FD for shared memory for Executor is %d\n\n", shm_fd);
         
         int waitstatus_v;
         wait(&waitstatus_v);
         sscanf(ptr,"%d",&returnID);
         shm_unlink(v_write_mem);
-        printf("Program3: Child process %d returned.\n\n",id_check);
-        printf("program: content found is %d\n",returnID);
+        printf("ParentProgram: Child process %d returned %d.\n",id_check,returnID);
+// printf("ParentProgram: content found is %d\n",returnID);
 
       } else {
         printf("%s\n", "ParentProgram: Child Process Creation failed. Exiting.");
