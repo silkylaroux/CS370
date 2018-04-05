@@ -25,6 +25,6 @@ FileOpener: FileOpener.o
 $(C_OBJS): ${C_HEADERS}
 #Clean up the directory
 clean:
-	rm -f *.o *~ $(EXE1) $(EXE2)
+	rm -f *.o *~ $(EXE1) $(EXE2) $(EXE3)
 package:
 	tar -cvf Armijo-Damian-H4.tar ParentProgram.c Executor.c FileOpener.c Makefile README.txt
