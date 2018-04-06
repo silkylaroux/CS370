@@ -29,63 +29,99 @@ void run_FIFO(int processesNum, int arrivalTime[], int burstTime[]){
         idl += (burstTime[x]);
     }
 }
-
+int all_zero(int burstTime[],int processNum){
+    for(int x = 0; x < processNum; x++){
+        if(burstTime[x]!=0){
+            return 1;
+        }
+    }
+    return 0;
+}
+int check_prev(int burstTime[],int count){
+    for (int x =0; x < count; x++){
+        if(burstTime[x]!=0){
+            return 1;
+        }
+    }
+    return 0;
+}
 void run_RR(int processesNum, int arrivalTime[], int burstTime[], int timeQuantum){
-    int idl =0;
     int count =0;
-    int remain;
-    remain = processesNum;
+    int remain =1;
     int waitTime[processesNum];
-    int empty = 0;
     int time = 0;
-    int flag = 0;
-    // while(empty != 1){
-    //     for(int x = 0; x < processesNum; x++){
-    //         if((arrivalTime[x] - idl) > 0) {
-    //             if(burstTime[x] > timeQuantum){
-    //                 printf("[%d]---IDLE---[%d]\n",idl,idl+timeQuantum);
-    //                 burstTime[x] -= timeQuantum;
-    //             }else{
-    //                 printf("[%d]---IDLE---[%d]\n",idl,arrivalTime[x]);
-    //             }
-    //         }
-            
-    //     }
-    //     empty = 1;
-    // }
-    printf("%d\n",remain);
+
+   if( arrivalTime[0]>0){
+       printf("[%d]---IDLE---[%d]\n",0,arrivalTime[0]);
+       time = arrivalTime[0];
+   }
+
+    count=0; 
+    int flag=0;
     while(remain!=0) { 
-        time=0; count=0;
-//printf("%d\n",burstTime[count]);
+printf("\narrive: %d\ntime: %d\ncount: %d\nburst: %d\narrive: %d\n",
+arrivalTime[count],time,count+1,burstTime[count],arrivalTime[count +1]);
+
         if(burstTime[count]<=timeQuantum && burstTime[count]>0) { 
+            printf("[%d]---P%d---[",time,count+1);
             time+=burstTime[count]; 
-            printf("%d\n",time);
-            burstTime[count]=0; 
+            printf("%d]\n",time);
+            if(count ==2){
+                printf("\n:%d\n",burstTime[count]);
+            }
+            burstTime[count]-=burstTime[count]; 
+            if(count ==2){
+                printf("\n:%d\n",burstTime[count]);
+            }
             flag=1; 
         } 
-        else if(burstTime[count]>0) { 
-            burstTime[count]-=timeQuantum; 
-            time+=timeQuantum; 
-            printf("%d\n",time);
-            remain--;
-        } 
-        if(burstTime[count]==0 && flag==1) 
-        { 
-            remain--; 
-        //printf("P[%d]\t|\t%d\t|\t%d\n",count+1,time-at[count],time-at[count]-bt[count]); 
-        //waitTime+=time-at[count]-bt[count]; 
-        //turnaround_time+=time-at[count]; 
-            flag=0; 
-        } 
-        if(count== processesNum-1) {
+        else if(burstTime[count]>0 ) { 
+            if((count ==processesNum-1) || (time + burstTime[count])<= arrivalTime[count+1]){
+//printf("\ntime: %d\ncount: %d\nburst: %d\narrive: %d\n",time,count+1,burstTime[count],arrivalTime[count +1]);
+
+                printf("[%d]---P%d---[",time,count+1);
+                time+=burstTime[count]; 
+                printf("%d]\n",time);
+                burstTime[count]=0; 
+                flag=1;
+            }else{
+                printf("[%d]---P%d---[",time,count+1);
+                if(count ==2){
+                    printf("\n%d:%d\n",timeQuantum,burstTime[count]);
+                }
+                burstTime[count]-=timeQuantum+1; 
+//printf("\ncheck%d:%d\n",count+1,burstTime[count]);
+                if(count ==2){
+                    printf("\n:%d\n",burstTime[count]);
+                }
+                time+=timeQuantum+1; 
+                printf("%d]\n",time);
+            }
+        }
+
+        if( burstTime[count] == 0 && flag==1){
+            flag = 0;
+        }
+        if(count == processesNum-1) {
             count=0; 
         }
+ 
         else if(arrivalTime[count+1]<=time) {
             count++; 
+        }else if(check_prev(burstTime,count)==0){
+            printf("[%d]---IDLE---[%d]\n",time,arrivalTime[count+1]);
+            time = arrivalTime[count+1];
+            //count = ;
+            //count = 0;
+        }else{
+            // printf("[%d]---IDLE---[%d]\n",time,arrivalTime[count+1]);
+            // time = arrivalTime[count+1];
+            // count = count;
+            count = 0;
         }
-        else{ 
-            count=0;
-        } 
+        if(all_zero(burstTime,processesNum)==0){
+            remain = 0;
+        }
     } 
 }
 
@@ -136,7 +172,11 @@ int main(int argc, char **argv){
     printf("\nGantt chart is :\n");
     run_FIFO(processesNum,arrivalTime,burstTime);
 
-    run_RR(processesNum, arrivalTime, burstTime, timeQuantum);
+    printf("\nIn Round Robin\n");
+    printf("\nGantt chart is :\n");
+    int arrivalTime2[] = {1,18,22,25,46};
+    int burstTime2[] = {5,1,7,1,6};
+    run_RR(processesNum, arrivalTime2, burstTime2, timeQuantum);
     
 
     return 0;
