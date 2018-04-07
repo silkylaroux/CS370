@@ -1,16 +1,17 @@
 /*
- *
- * 
- * 
- * 
- * 
- * 
+ * Damian Armijo 
+ * If you see the word data, it is short hand for turnaround time,
+ * wait time, and throughput.
  */
 #include <stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
 
-
+/*
+ * This is a helper method which checks if the values
+ * in burstTime up until count are empty or not.
+ * returns 1 if not empty, 0 if empty
+ */
 int all_zero(int burstTime[],int processNum){
     for(int x = 0; x < processNum; x++){
         if(burstTime[x]!=0){
@@ -19,17 +20,9 @@ int all_zero(int burstTime[],int processNum){
     }
     return 0;
 }
-int check_prev(int burstTime[],int count){
-    for (int x =0; x < count; x++){
-        if(burstTime[x]!=0){
-            return 1;
-        }
-    }
-    return 0;
-}
 
 /*
- *  This is a Helper method which takes in an arrival time array
+ *  This is a void Helper method which takes in an arrival time array
  *  and a burst time array, and sorts both by the smallest arrival time
  *  first.
  *  EX: before: arrT = {3,2,5} burT = {4,2,0}
@@ -53,6 +46,14 @@ void sort_by_arrive(int processesNum,int arrivalTime[], int burstTime[]){
     }
 }
 
+/*
+ * This void function takes in 1 int and two int arrays.
+ * proccessesNum is the total num of proccesses to be executed.
+ * arrivalTime[] is a list of ints (sorted) by the arrival time
+ * burstTime[] is a list of ints(sorted) by the arrival time.
+ * The function takes the information in the two arrays, and gets the data
+ * from First Come First Serve scheduling on it, and prints out this data.
+ */ 
 void run_FCFS(int processesNum, int arrivalTime[], int burstTime[]){
     int idl =0;
     double waitTime=0;
@@ -79,7 +80,14 @@ void run_FCFS(int processesNum, int arrivalTime[], int burstTime[]){
     printf("Average Throughput For First Come First Serve is %f\n",throughPut);
 }
 
-
+/*
+ * This void function takes in 1 int and two int arrays.
+ * proccessesNum is the total num of proccesses to be executed.
+ * arrivalTime[] is a list of ints (sorted) by the arrival time
+ * burstTime[] is a list of ints(sorted) by the arrival time.
+ * The function takes the information in the two arrays, and gets the data
+ * from round robin scheduling on it, and prints out this data.
+ */ 
 void run_SJF(int processesNum, int arrivalTime[], int burstTime[]){
 
     int used[10] = {1,1,1,1,1,1,1,1,1,1};
@@ -100,6 +108,7 @@ void run_SJF(int processesNum, int arrivalTime[], int burstTime[]){
         if(arrivalTime[final] > time){
             printf("[%d]---IDLE---[%d]\n",time,arrivalTime[count]);
             time = arrivalTime[final];
+
         }else if(final != count){
             printf("[%d]---P%d---[%d]\n",(time),(final+1),(time+burstTime[final]));
             waitTime += (time - arrivalTime[final]);                                // for waitTime
@@ -107,6 +116,7 @@ void run_SJF(int processesNum, int arrivalTime[], int burstTime[]){
             turnaround += (time - arrivalTime[final]);
             used[final] =0;
             count--;
+
         }else{
             printf("[%d]---P%d---[%d]\n",(time),(final+1),(time+burstTime[final]));
             waitTime += (time - arrivalTime[final]);                                // for waitTime
@@ -114,9 +124,11 @@ void run_SJF(int processesNum, int arrivalTime[], int burstTime[]){
             turnaround += (time - arrivalTime[final]);
             used[final] =0;
             count++;
+            
         }
     }
     throughPut = processesNum/(double)time;
+    // printing out info from SJF scheduling.
     printf("\nAverage Turnaround time for Shortest Job First - Non Preemptive is %f\n", (turnaround/processesNum));
     printf("Average Wait time For Shortest Job First - Non Preemptive is %f\n",waitTime/processesNum);
     printf("Average Throughput For Shortest Job First - Non Preemptive is %f\n",throughPut);
@@ -133,8 +145,13 @@ void run_SJF_preemp(int processesNum, int arrivalTime[], int burstTime[]){
 }
 
 /*
- *
- * 
+ *  This void function takes in two arrays, and two ints.
+ *  proccessesNum is the total num of proccesses to be executed
+ *  timeQuantum is the time quantum for the number. 
+ *  arrivalTime[] is a list of ints (sorted) by the arrival time
+ *  bTime[] is a list of ints(sorted) by the arrival time.
+ *  The function takes the information in the two arrays, and gets the data
+ *  from round robin scheduling on it, and prints out this data.
  */
 void run_RR(int processesNum, int arrivalTime[], int bTime[], int timeQuantum){
     int burstTime[10];                                  // a temp array for burstTime
@@ -146,29 +163,32 @@ void run_RR(int processesNum, int arrivalTime[], int bTime[], int timeQuantum){
     int time = 0;
     double waitTime =0;
     double turnaround = 0;
-   if( arrivalTime[0]>0){
+
+   if( arrivalTime[0]>0){                                   // Handles if initial arrival is not 0.
        printf("[%d]---IDLE---[%d]\n",0,arrivalTime[0]);
        time = arrivalTime[0];
    }
 
     count=0; 
     while(remain!=0) { 
-
+                    
         if(burstTime[count]<=timeQuantum && burstTime[count]>0) { 
             printf("[%d]---P%d---[",time,count+1);
             waitTime += (time - arrivalTime[count]);
             time+=burstTime[count]; 
-            printf("%d]\n",time);
-            burstTime[count]-=burstTime[count]; 
+            printf("%d]\n",time);                           // The following if's just handle the different ways in
+            burstTime[count]-=burstTime[count];             // which the info about RR is calculated.
         } 
-        else if(burstTime[count]>0 ) { 
-            if((count ==processesNum-1) ){
+        else if(burstTime[count]>0 ) {                      // If burst is greater than time Quantum 
+            if((count ==processesNum-1) ){                  // If is last value in list
                 printf("[%d]---P%d---[",time,count+1);
                 waitTime += (time - arrivalTime[count]);   
                 time+=burstTime[count]; 
                 turnaround += (time - arrivalTime[count]);
                 printf("%d]\n",time);
                 burstTime[count]=0; 
+                                                            // Else if the time plus burst of the current value
+                                                            // is less than arrival time of next in the list.
             }else if((time + burstTime[count])<= arrivalTime[count+1]){
                 printf("[%d]---P%d---[",time,count+1);
                 waitTime += (time - arrivalTime[count]); 
@@ -176,6 +196,8 @@ void run_RR(int processesNum, int arrivalTime[], int bTime[], int timeQuantum){
                 turnaround += (time - arrivalTime[count]);
                 printf("%d]\n",time);
                 burstTime[count]=0; 
+                                                            // Else if the time plus quantum is smaller in
+                                                            // current than arrival of next in the list.
             }else if((time + timeQuantum)<= arrivalTime[count+1]){
                 printf("[%d]---P%d---[",time,count+1);
                 burstTime[count]-= arrivalTime[count+1]-time; 
@@ -183,15 +205,16 @@ void run_RR(int processesNum, int arrivalTime[], int bTime[], int timeQuantum){
                 time = arrivalTime[count+1];
                 turnaround += (time - arrivalTime[count]); 
                 printf("%d]\n",time);
-                
-            }else if(burstTime[count+1]==0){
+                                                            // Else if burstTime of next is 0 ie already used
+            }else if(burstTime[count+1]==0){               
                 printf("[%d]---P%d---[",time,count+1);
                 waitTime += (time - arrivalTime[count]); 
                 time+=burstTime[count];
                 turnaround += (time - arrivalTime[count]); 
                 printf("%d]\n",time);
                 burstTime[count]=0; 
-            }else{
+                                                            // Else get the time updated, aswell as other info
+            }else{                                          
                 printf("[%d]---P%d---[",time,count+1);                
                 burstTime[count]-=timeQuantum+1;
                 waitTime += (time - arrivalTime[count]);  
@@ -200,26 +223,33 @@ void run_RR(int processesNum, int arrivalTime[], int bTime[], int timeQuantum){
                 printf("%d]\n",time);
             }
         }
-        if(count == processesNum-1) {
+        if(count == processesNum-1) {                       // if count = max restart loop
             count=0; 
-        }else if(arrivalTime[count+1]<=time) {
+        }else if(arrivalTime[count+1]<=time) {              // increases count to next value in the list 
             count++; 
-        }else if(check_prev(burstTime,count)==0){
+        }else if(all_zero(burstTime,count)==0){             // calls all_zero()
             printf("[%d]---IDLE---[%d]\n",time,arrivalTime[count+1]);
             time = arrivalTime[count+1];
         }else{
             count = 0;
         }
-        if(all_zero(burstTime,processesNum)==0){
-            remain = 0;
-        }
+        if(all_zero(burstTime,processesNum)==0){            // Calls helper method which checks if all 
+            remain = 0;                                     // burst values are 0; and breaks the outer
+        }                                                   // outer loop.
     }
     double throughPut = processesNum/(double)time;
     waitTime = waitTime/2;                                  // correcting the multiple additions to waitTime
-    printf("Average Turnaround time For Round Robin is %f\n",turnaround/processesNum);
+    // printing out info from RR scheduling.
+    printf("Average Turnaround time For Round Robin is %f\n",turnaround/processesNum); 
     printf("Average Wait time For Round Robin is %f\n",waitTime/processesNum);
     printf("Average Throughput For Round Robin is %f\n",throughPut); 
 }
+
+/*
+ * This is the main function for the scheduler.c file.
+ * It is meant to take in 4 arguments the seed for randomization,
+ * the number of processess, and the time quantum for round robin. 
+ */
 
 int main(int argc, char **argv){
     unsigned int seed = atoi(argv[1]);
@@ -229,17 +259,19 @@ int main(int argc, char **argv){
     int arrivalTime[10];
     int burstTime[10];
 
-    srand(seed); // initialize random number
+    srand(seed);                                            // initialize random number
     for( int i = 0; i< processesNum ; i++){
-        arrivalTime[i] = rand() % 50; // generate arrival time in range [0-49]
-        burstTime[i] = (rand() %10) +1; // generate burst time in range [1-10]    
+        arrivalTime[i] = rand() % 50;                       // generate arrival time in range [0-49]
+        burstTime[i] = (rand() %10) +1;                     // generate burst time in range [1-10]    
     }
 
     printf("Before sort:\n");
     for(int x = 0; x < processesNum; x++){
         printf("Arrival: %d\t|\tBurst: %d\n",arrivalTime[x],burstTime[x]);
     }
-    sort_by_arrive(processesNum,arrivalTime,burstTime);
+
+    sort_by_arrive(processesNum,arrivalTime,burstTime);     // Sorts the "random" data by arrival time
+
     printf("\nAfter sort:\n");
     for(int x = 0; x < processesNum; x++){
         printf("Arrival: %d\t|\tBurst: %d\n",arrivalTime[x],burstTime[x]);
